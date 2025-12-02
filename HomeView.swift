@@ -285,42 +285,54 @@ struct RecipeCardView: View {
 }
 
 struct MealDetailView: View {
+    // Le repas dont on veut afficher les détails.
     let meal: Meal
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
+
+                // Affiche l’image du repas si elle existe.
                 if let url = meal.thumbnailURL {
                     AsyncImage(url: url) { phase in
                         switch phase {
+
                         case .empty:
+                            // Image en cours de chargement → fond gris.
                             Color(.systemGray5)
                                 .frame(height: 220)
+
                         case .success(let image):
                             ZStack(alignment: .topTrailing) {
+                                // Image bien chargée.
                                 image
                                     .resizable()
                                     .scaledToFill()
                                     .frame(height: 260)
                                     .clipped()
 
-                                // Favorite heart button
+                                // Bouton "cœur" dans le coin de l’image.
                                 FavoriteHeartButton(meal: meal)
                                     .padding(12)
                             }
+
                         case .failure:
+                            // Si l’image ne charge pas → fond gris foncé.
                             Color(.systemGray4)
                                 .frame(height: 220)
+
                         @unknown default:
                             EmptyView()
                         }
                     }
                 }
 
+                // Titre du repas.
                 Text(meal.title)
                     .font(.title.bold())
                     .padding(.horizontal)
 
+                // Affiche la catégorie si elle existe.
                 if let category = meal.strCategory {
                     Text(category)
                         .font(.subheadline)
@@ -328,20 +340,29 @@ struct MealDetailView: View {
                         .padding(.horizontal)
                 }
 
+                // Affiche les instructions de préparation.
                 if let instructions = meal.strInstructions {
                     Text(instructions)
                         .padding(.horizontal)
                 }
 
+                // Si le repas contient des ingrédients :
                 if !meal.ingredients.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
+
                         Text("Ingrédients")
                             .font(.headline)
                             .padding(.top)
+
+                        // On parcourt tous les ingrédients + mesures.
                         ForEach(Array(meal.ingredients.enumerated()), id: \ .offset) { _, pair in
                             HStack {
+                                // Nom de l’ingrédient.
                                 Text(pair.name)
+
                                 Spacer()
+
+                                // Quantité de l’ingrédient.
                                 Text(pair.measure)
                                     .foregroundColor(.secondary)
                             }
@@ -353,32 +374,50 @@ struct MealDetailView: View {
                 Spacer()
             }
         }
+
+        // Titre dans la barre du haut.
         .navigationTitle(meal.title)
+
+        // Affiche le titre en petit mode inline.
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-// Small reusable favorite button
+
+// Petit bouton réutilisable pour ajouter/retirer un favori.
 struct FavoriteHeartButton: View {
     let meal: Meal
+
+    // Accès au FavoriteStore (liste des favoris).
     @StateObject private var store = FavoriteStore.shared
 
     var body: some View {
         Group {
+            // Vérifie que le repas a un ID unique.
             if let id = meal.idMeal {
+
                 Button {
+                    // Ajoute ou retire des favoris.
                     store.toggle(id: id)
+
                 } label: {
+
+                    // Icône cœur pleine si favori, vide sinon.
                     Image(systemName: store.isFavorite(id: id) ? "heart.fill" : "heart")
                         .foregroundColor(store.isFavorite(id: id) ? .red : .white)
+
+                        // Padding interne pour arrondir le bouton.
                         .padding(8)
                         .background(Color.black.opacity(0.25))
+
+                        // Rend le bouton circulaire.
                         .clipShape(Circle())
                 }
             }
         }
     }
 }
+
 
 /// Loader view: when we only have a summary (from filter.php) we fetch full details by id
 struct MealDetailLoader: View {
