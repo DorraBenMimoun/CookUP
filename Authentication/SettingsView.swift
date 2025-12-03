@@ -40,5 +40,4 @@ struct SettingsView: View {
     SettingsView(showSignInView: .constant(false))
 }
 extension SettingsView{
-    // Email-related functions removed as requested
 }

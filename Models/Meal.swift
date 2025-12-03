@@ -5,11 +5,9 @@ struct MealResponse: Decodable {
     let meals: [Meal]?
 }
 
-// MARK: - Favorites helper
 import Foundation
 
 extension Meal {
-    /// Computed favorite flag based on FavoriteStore
     var isFavorite: Bool {
         guard let id = idMeal else { return false }
         return FavoriteStore.shared.isFavorite(id: id)

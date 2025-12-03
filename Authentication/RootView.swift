@@ -43,10 +43,6 @@ struct RootView: View {
                 Label("Réglages", systemImage: "gearshape.fill")
             }
         }
-        // NOTE: Login is now optional. We no longer present the sign-in flow automatically
-        // when the app appears. The `showSignInView` binding can still be triggered from
-        // other views (for example the SettingsView "Log out" button) to present the
-        // authentication UI when the user chooses to sign in or when they log out.
         .fullScreenCover(isPresented: $showSignInView) {
             NavigationStack {
                 AuthenticationView(showSignInView: $showSignInView)
